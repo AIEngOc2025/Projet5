@@ -1,0 +1,13 @@
+# Convention de nommage des branches git du projet 
+
+Pour Futurisys, adoptez le workflow GitHub Flow :
+
+main : Code stable, toujours prêt pour la production.
+
+develop : Branche d'intégration pour les nouvelles fonctionnalités.
+
+feat/api-setup : Pour le développement de FastAPI.
+
+feat/database : Pour la partie PostgreSQL.
+
+fix/bug-xyz : Pour les corrections.

@@ -1,0 +1,21 @@
+# Serveur et API
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+
+# Machine Learning
+scikit-learn
+joblib
+pandas
+numpy
+
+# Base de données
+sqlalchemy
+psycopg2-binary 
+python-dotenv
+
+# Tests et Qualité
+pytest
+pytest-cov
+httpx

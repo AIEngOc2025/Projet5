@@ -29,7 +29,7 @@ Git LFS (pour le téléchargement du modèle .joblib)
 ### 2. Installation locale
 
 - Cloner le dépôt
-git clone https://github.com/votre-username/votre-repo.git
+git clone https://github.com/votre-username/votre-repo.git TODO!!!
 cd votre-repo
 
 - Installer les dépendances
@@ -69,4 +69,5 @@ v1.0.0 : Intégration complète de PostgreSQL et déploiement de production.
 
 ## Contact
 
-Freelance ML Engineer - [Votre Nom] Client : Futurisys - Contact technique : Aurélien
+Freelance ML Engineer - CM 
+Client : Futurisys - Contact technique : Aurélien

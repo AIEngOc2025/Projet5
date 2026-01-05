@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Tests & Qualité
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Modèles & Data (on ne veut que les versions trackées via LFS ou l'API)
+.ipynb_checkpoints
+.DS_Store
+
+# FastAPI / Uvicorn
+.vscode/
+.idea/
