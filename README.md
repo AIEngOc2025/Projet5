@@ -44,7 +44,7 @@ echo "API_KEY=votre_cle_secrete" >> .env
 uvicorn app.main:app --reload
 L'API sera accessible sur http://127.0.0.1:8000. La documentation interactive est disponible sur /docs.
 
-## Sécurisation et Authentification
+## Sécurisation et Authentification 
 
 L'accès aux endpoints sensibles (comme /predict) est protégé par une API Key. Chaque requête doit inclure l'en-tête suivant : X-API-KEY: votre_cle_secrete
 
@@ -66,6 +66,38 @@ Nous suivons le Semantic Versioning. Chaque version stable est marquée par un t
 v0.1.0 : Initialisation de la structure et API de base.
 
 v1.0.0 : Intégration complète de PostgreSQL et déploiement de production.
+
+## intégration et Déploiement Continus (CI/CD)
+
+Pour répondre aux exigences de Futurisys, ce projet utilise un pipeline automatisé via GitHub Actions. Ce système garantit que chaque modification du code est testée avant d'être déployée en production.
+
+Fonctionnement du Pipeline
+
+Le pipeline est divisé en deux étapes majeures (Jobs) :
+
+### Vérification de Qualité (CI)
+
+Déclenché sur chaque push (branches main et develop) et chaque Pull Request.
+
+Actions : Installation de l'environnement, exécution des tests unitaires avec Pytest, et calcul du taux de couverture.
+
+Objectif : Empêcher l'introduction de régressions ou de bugs.
+
+### Déploiement Automatisé (CD)
+
+Déclenché uniquement lors d'un push réussi sur la branche main.
+
+Actions : Synchronisation sécurisée du code et du modèle (Git LFS) vers Hugging Face Spaces.
+
+Objectif : Assurer que la version en ligne est toujours la version stable la plus récente.
+
+### Surveillance et Rapports
+
+Statut du Build : Le badge en haut de ce README indique en temps réel si le projet est "sain" (Pass) ou en erreur (Fail).
+
+Couverture de Code : À chaque exécution, un rapport détaillé est généré. Nous visons un seuil de 80% de couverture minimale pour les composants critiques de l'API.
+
+Gestion des Secrets : Toutes les clés (API_KEY, DB_URL, HF_TOKEN) sont stockées de manière chiffrée dans les GitHub Actions Secrets et ne sont jamais exposées dans le code source.
 
 ## Contact
 
