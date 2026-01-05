@@ -10,6 +10,8 @@ venv/
 .coverage
 htmlcov/
 *.log
+convention_de_nommage_des_branches_git_du_projet.txt
+
 
 # Modèles & Data (on ne veut que les versions trackées via LFS ou l'API)
 .ipynb_checkpoints
