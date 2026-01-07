@@ -1,106 +1,52 @@
-#%% importatations de bibliothèques
-import joblib
-import pandas as pd
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field, validator
-from typing import List
-
-from fastapi import Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from . import database, models
-
-#%% 1. Définition du schéma de données avec Pydantic
-from pydantic import BaseModel, Field, field_validator # Import mis à jour
 from typing import List
 
-#%% CREATION AUTOMATIQUE DES TABLES DE DONNEES
-from .database import engine
-from . import models
+from . import models, schemas, crud
+from .database import engine, get_db
 
-# Cette ligne déclenche la création des tables dans PostgreSQL
+# Création des tables dans la base de données (si elles n'existent pas)
 models.Base.metadata.create_all(bind=engine)
 
-class BuildingInput(BaseModel):
-    PropertyGFATotal: float = Field(..., gt=0)
-    YearBuilt: int = Field(..., gt=1800, lt=2026)
-    BuildingType: str
-    #NumFloors: int = Field(..., gt=0)
-    #Features: List[str] = Field(default_factory=list)   
-
-    @field_validator('BuildingType')
-    @classmethod # Recommandé en Pydantic V2
-    def validate_type(cls, v: str) -> str:
-        allowed = ['Hotel', 'Office', 'Retail', 'Warehouse']
-        if v not in allowed:
-            # L'erreur sera proprement formatée en JSON par FastAPI
-            raise ValueError(f"Type non supporté. Choix possibles : {allowed}")
-        return v
-
-#%% 2. Initialisation de l'API
 app = FastAPI(
     title="Futurisys ML API",
-    description="API de prédiction de consommation d'énergie et émissions CO2",
+    description="API de prédiction de consommation énergétique pour les bâtiments.",
     version="1.0.0"
 )
 
-#%% 3. Chargement du modèle (Pipeline Scikit-Learn
+# Fonction simulée du modèle ML (À remplacer par l'import de ton vrai modèle .pkl)
+def mock_ml_predict(data: schemas.PredictionCreate) -> float:
+    # Ici, on simule une logique de calcul simple
+    # En production : return model.predict(X)
+    return (data.property_gfa_total * 0.15) + (2025 - data.year_built) * 0.5
 
-try:
-    model=joblib.load("models/model_energy.joblib")
-    print("Modèle chargé avec succès.")
-except Exception as e:
-    print(f"Erreur de chargement du modèle : {e}")
-    model = None
-
-#%% 4. Endpoints
 @app.get("/")
-def health_check():
-    return {"status": "online", "model_loaded": model is not None}
+def read_root():
+    return {"message": "Bienvenue sur l'API Futurisys. Accédez à /docs pour la documentation."}
 
-
-@app.post("/predict", response_model=dict)
-def predict(data: BuildingInput):
-    if model is None:
-        raise HTTPException(status_code=503, detail="Modèle non disponible")
-    
+@app.post("/predict", response_model=schemas.PredictionResponse)
+def predict_energy(payload: schemas.PredictionCreate, db: Session = Depends(get_db)):
+    """
+    Réalise une prédiction et enregistre le résultat en base de données.
+    """
     try:
-        # Conversion Pydantic -> DataFrame (respecte l'ordre des features)
-        input_df = pd.DataFrame([data.model_dump])
+        # 1. Calcul de la prédiction via le moteur ML
+        prediction_value = mock_ml_predict(payload)
         
-        # Calcul de la prédiction
-        prediction = model.predict(input_df)
+        # 2. Persistance dans PostgreSQL via le CRUD
+        new_record = crud.create_prediction(
+            db=db, 
+            prediction_data=payload, 
+            pred_value=prediction_value
+        )
         
-        return {
-            "prediction": round(float(prediction[0]), 2),
-            "unit": "kgCO2e",
-            "status": "success"
-        }
+        return new_record
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la prédiction : {str(e)}")
-    #%% 5. Intégration avec la base de données pour le logging (optionnel)
-@app.post("/predict")
-def predict(data: BuildingInput, db: Session = Depends(database.get_db)):
-    # 1. Vérification du modèle
-    if model is None:
-        raise HTTPException(status_code=503, detail="Modèle non disponible")
-    
-    # 2. Calcul de la prédiction
-    input_df = pd.DataFrame([data.dict()])
-    prediction = model.predict(input_df)[0]
-    
-    # 3. SAUVEGARDE EN BASE DE DONNÉES
-    db_prediction = models.PredictionRecord(
-        property_gfa_total=data.PropertyGFATotal,
-        year_built=data.YearBuilt,
-        building_type=data.BuildingType,
-        prediction_value=float(prediction)
-    )
-    db.add(db_prediction)
-    db.commit()
-    db.refresh(db_prediction)
-    
-    return {
-        "id": db_prediction.id, # On renvoie l'ID de l'enregistrement
-        "prediction": round(float(prediction), 2),
-        "unit": "kgCO2e"
-    }
+
+@app.get("/history", response_model=List[schemas.PredictionResponse])
+def get_history(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    """
+    Récupère l'historique des dernières prédictions.
+    """
+    return crud.get_predictions(db, skip=skip, limit=limit)

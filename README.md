@@ -1,105 +1,75 @@
-# Projet Futurisys : API de Prédiction d'Empreinte Carbone
+# Futurisys - Energy & Carbon Prediction API
 
 ## Présentation du Projet
 
-Ce projet est un Proof of Concept (POC) visant à rendre opérationnel un modèle de Machine Learning capable de prédire l'empreinte carbone des bâtiments (Projet 3). L'objectif est d'exposer ce modèle via une API performante et sécurisée, avec une traçabilité complète des prédictions en base de données.
+Ce Proof of Concept (POC) fournit une infrastructure robuste pour exposer un modèle de Machine Learning spécialisé dans la prédiction de l'empreinte carbone et de la consommation énergétique des bâtiments.
 
-## Architecture Technique
+L'objectif est de transformer un modèle expérimental en un service de production fiable, testé et automatisé.
 
-Framework API : FastAPI (Documentation Swagger auto-générée).
+## Fonctionnalités Clés
 
-Base de Données : PostgreSQL (Persistence des logs de prédiction).
+- API RESTful : Développée avec FastAPI pour une performance optimale.
 
-Machine Learning : Scikit-Learn (Modèle de régression).
+- Persistance des données : Chaque prédiction est archivée dans une base PostgreSQL.
 
-CI/CD : GitHub Actions (Tests automatisés et déploiement continu).
+- Validation stricte : Utilisation de Pydantic pour garantir l'intégrité des données entrantes.
 
-Tests : Pytest avec rapport de couverture pytest-cov.
+- Interface Interactive : Documentation Swagger UI générée automatiquement.
 
-## Installation et Utilisation
+- CI/CD : Pipeline automatisé testant le code et déployant vers Hugging Face Spaces.
 
-### 1. Prérequis
+## Installation et Configuration
+1. Clonage et Environnement
 
-Python 3.12+
-
-PostgreSQL (instance locale ou cloud)
-
-Git LFS (pour le téléchargement du modèle .joblib)
-
-### 2. Installation locale
-
-- Cloner le dépôt
-git clone https://github.com/votre-username/votre-repo.git TODO!!!
-cd votre-repo
-
-- Installer les dépendances
+Bash
+git clone https://github.com/votre-repo/projet5.git
+cd projet5
+python -m venv projet5_venv
+source projet5_venv/bin/activate  # MacOS/Linux
 pip install -r requirements.txt
+2. Base de données
 
-- Configurer les variables d'environnement (.env)
-echo "DATABASE_URL=postgresql://user:password@localhost:5432/futurisys" > .env
-echo "API_KEY=votre_cle_secrete" >> .env
+L'API nécessite PostgreSQL. Configurez votre variable d'environnement :
 
-### 3. Lancement de l'API
+Bash
+export DATABASE_URL="postgresql://user:projet5@localhost:5432/futurisys_db"
+3. Lancement
 
+Bash
 uvicorn app.main:app --reload
 L'API sera accessible sur http://127.0.0.1:8000. La documentation interactive est disponible sur /docs.
 
-## Sécurisation et Authentification 
+## Schéma de Données
 
-L'accès aux endpoints sensibles (comme /predict) est protégé par une API Key. Chaque requête doit inclure l'en-tête suivant : X-API-KEY: votre_cle_secrete
+Le modèle de données assure la traçabilité complète des prédictions effectuées :
 
-## tests et Qualité 
+Colonne	Type	Description
+id	Integer	Clé primaire unique
+property_gfa_total	Float	Surface totale du bâtiment
+year_built	Integer	Année de construction
+building_type	String	Type d'usage (Office, Hotel, etc.)
+prediction_value	Float	Résultat du modèle ML
+created_at	DateTime	Horodatage automatique
+🧪 Tests et Qualité
+Pour garantir la fiabilité demandée, une suite de tests unitaires est intégrée.
 
-Pour garantir la fiabilité du code exigée par Futurisys, nous utilisons Pytest.
+Bash
+## Lancer les tests et voir le rapport de couverture
 
-- Lancer les tests
-pytest
+python -m pytest --cov=app tests/
 
-## Générer le rapport de couverture
+## Pipeline CI/CD
 
-pytest --cov=app tests/
+Le workflow GitHub Actions (.github/workflows/main.yml) automatise :
 
-## Gestion des Versions
+L'initialisation : Installation des dépendances et de PostgreSQL en environnement de test.
 
-Nous suivons le Semantic Versioning. Chaque version stable est marquée par un tag Git.
+La validation : Exécution de Pytest avec un seuil de couverture.
 
-v0.1.0 : Initialisation de la structure et API de base.
+Le déploiement : Mise à jour automatique du Space Hugging Face après succès des tests sur la branche main.
 
-v1.0.0 : Intégration complète de PostgreSQL et déploiement de production.
+## Sécurité et Authentification
 
-## intégration et Déploiement Continus (CI/CD)
+- Validation des schémas : Protection contre les injections de données malformées via Pydantic.
 
-Pour répondre aux exigences de Futurisys, ce projet utilise un pipeline automatisé via GitHub Actions. Ce système garantit que chaque modification du code est testée avant d'être déployée en production.
-
-Fonctionnement du Pipeline
-
-Le pipeline est divisé en deux étapes majeures (Jobs) :
-
-### Vérification de Qualité (CI)
-
-Déclenché sur chaque push (branches main et develop) et chaque Pull Request.
-
-Actions : Installation de l'environnement, exécution des tests unitaires avec Pytest, et calcul du taux de couverture.
-
-Objectif : Empêcher l'introduction de régressions ou de bugs.
-
-### Déploiement Automatisé (CD)
-
-Déclenché uniquement lors d'un push réussi sur la branche main.
-
-Actions : Synchronisation sécurisée du code et du modèle (Git LFS) vers Hugging Face Spaces.
-
-Objectif : Assurer que la version en ligne est toujours la version stable la plus récente.
-
-### Surveillance et Rapports
-
-Statut du Build : Le badge en haut de ce README indique en temps réel si le projet est "sain" (Pass) ou en erreur (Fail).
-
-Couverture de Code : À chaque exécution, un rapport détaillé est généré. Nous visons un seuil de 80% de couverture minimale pour les composants critiques de l'API.
-
-Gestion des Secrets : Toutes les clés (API_KEY, DB_URL, HF_TOKEN) sont stockées de manière chiffrée dans les GitHub Actions Secrets et ne sont jamais exposées dans le code source.
-
-## Contact
-
-Freelance ML Engineer - CM 
-Client : Futurisys - Contact technique : Aurélien
+- Gestion des Secrets : Utilisation des variables d'environnement et des GitHub Secrets (HF_TOKEN) pour ne jamais exposer de clés en clair.

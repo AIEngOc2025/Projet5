@@ -1,9 +1,10 @@
+#%% configuration de la base de données avec SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base # declarative_base a bougé dans .orm dans les versions récentes
 import os
 
 # Configuration de l'URL
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/futurisys_db")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:projet5@localhost:5432/futurisys_db")
 
 # L'engine
 engine = create_engine(SQLALCHEMY_DATABASE_URL)

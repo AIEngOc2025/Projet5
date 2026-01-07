@@ -9,26 +9,45 @@ on:
 jobs:
   quality-check:
     runs-on: ubuntu-latest
+    # Ajout d'un conteneur Postgres pour que l'app puisse démarrer durant les tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: pass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true # Crucial pour récupérer le modèle .joblib
+          lfs: true
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13' # Aligné sur ton environnement local
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest-cov huggingface_hub
+          pip install pytest-cov httpx huggingface_hub
 
       - name: Run Tests with Coverage
+        env:
+          # On pointe vers le service postgres ci-dessus
+          DATABASE_URL: postgresql://user:pass@localhost:5432/testdb
+          PYTHONPATH: . 
         run: |
-          # On définit des variables d'env factices pour les tests
-          export DATABASE_URL="postgresql://user:pass@localhost/testdb"
-          pytest --cov=app --cov-report=term-missing
+          python -m pytest --cov=app --cov-report=term-missing
 
   deploy-to-huggingface:
     needs: quality-check
@@ -39,9 +58,17 @@ jobs:
         with:
           lfs: true
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Hugging Face Hub
+        run: pip install huggingface_hub
+
       - name: Push to Hugging Face
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_SECRET }}
         run: |
           python -c "
           from huggingface_hub import HfApi
@@ -51,6 +78,6 @@ jobs:
               repo_id='dataChaser/predict_building_carbon_footprint',
               repo_type='space',
               token='${{ secrets.HF_TOKEN }}',
-              ignore_patterns=['.git*', 'venv/', '__pycache__/', 'tests/']
+              ignore_patterns=['.git*', 'projet5_venv/', '__pycache__/', 'tests/', '.gradio/']
           )
           "

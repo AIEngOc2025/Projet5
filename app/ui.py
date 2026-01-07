@@ -49,4 +49,4 @@ with gr.Blocks(title="Futurisys Carbon Predictor") as demo:
 
 #%% Lancement de l'interface
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(inline=True)

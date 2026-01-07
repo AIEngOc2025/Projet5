@@ -1,11 +1,64 @@
-#%% importer les bibliothèques nécessaires
+import pytest
 from fastapi.testclient import TestClient
-from app import app
-#%% creation d'un client de test
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.main import app
+from app.database import Base, get_db
+
+# --- Configuration d'une base de données de test (SQLite en mémoire) ---
+# Cela évite de polluer votre vraie base PostgreSQL pendant les tests
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test_temp.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# On remplace la dépendance get_db par celle de test
+def override_get_db():
+    try:
+        db = TestingSessionLocal()
+        yield db
+    finally:
+        db.close()
+
+app.dependency_overrides[get_db] = override_get_db
+
 client = TestClient(app)
 
-#%% test de l'endpoint racine
-def test_prediction_endpoint():
-    response = client.post("/predict", json={"Surface": 500, "YearBuilt": 2010, "PropertyType": "Office"})
+@pytest.fixture(scope="module", autouse=True)
+def setup_db():
+    # Crée les tables au début des tests
+    Base.metadata.create_all(bind=engine)
+    yield
+    # Supprime les tables à la fin
+    Base.metadata.drop_all(bind=engine)
+
+# --- Les Tests ---
+
+def test_read_root():
+    response = client.get("/")
     assert response.status_code == 200
-    assert "prediction" in response.json()
+    assert "message" in response.json()
+
+def test_predict_success():
+    # Simule un envoi de données valides
+    payload = {
+        "property_gfa_total": 1500.5,
+        "year_built": 1995,
+        "building_type": "Office"
+    }
+    response = client.post("/predict", json=payload)
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert "prediction_value" in data
+    assert data["property_gfa_total"] == 1500.5
+    assert "id" in data
+
+def test_predict_invalid_data():
+    # Teste la validation Pydantic (on envoie un string au lieu d'un float)
+    payload = {
+        "property_gfa_total": "pas_un_nombre",
+        "year_built": 1995,
+        "building_type": "Office"
+    }
+    response = client.post("/predict", json=payload)
+    assert response.status_code == 422  # Erreur de validation

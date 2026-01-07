@@ -49,11 +49,5 @@ import joblib
 best_model = model
 
 # Sauvegarde du pipeline complet (inclut le préprocesseur + le modèle)
-joblib.dump(best_model, 'model_energy.joblib', compress=3)
-
+joblib.dump(best_model, 'models/model_energy.joblib', compress=3)
 print("Modèle compressé et sauvegardé sous 'model_energy.joblib'")
-
-
-
-
-# %%
