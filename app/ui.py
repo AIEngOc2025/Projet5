@@ -1,52 +1,51 @@
-#%% Importation des bibliothèques nécessaires
 import gradio as gr
 import requests
 
-#%% URL de votre API FastAPI (locale ou déployée)
+# URL de ton API FastAPI (assure-toi que uvicorn tourne sur ce port)
 API_URL = "http://127.0.0.1:8000/predict"
 
-#%% Fonction de prédiction via l'API
-def predict_carbon(surface, year, b_type):
-    # Préparation des données pour l'API
+def predict_carbon(gfa, year, btype):
+    # CORRECTION : Les clés ici doivent correspondre EXACTEMENT à app/schemas.py
     payload = {
-        "PropertyGFATotal": surface,
-        "YearBuilt": year,
-        "BuildingType": b_type
+        "property_gfa_total": float(gfa),
+        "year_built": int(year),
+        "building_type": btype
     }
     
     try:
         response = requests.post(API_URL, json=payload)
-        if response.status_code != 200:
-            print(response.json())
+        
         if response.status_code == 200:
-            res = response.json()
-            return f"🌿 Prédiction : {res['prediction']} {res['unit']}"
+            result = response.json()
+            return f"Prédiction : {result['prediction_value']:.2f} tCO2eq"
         else:
-            return f"❌ Erreur API : {response.json().get('detail', 'Inconnue')}"
+            # Affiche l'erreur détaillée renvoyée par FastAPI
+            return f"Erreur API ({response.status_code}) : {response.text}"
+            
     except Exception as e:
-        return f"🔌 Erreur de connexion : {str(e)}"
+        return f"Erreur de connexion : {str(e)}"
 
-#%% Construction de l'interface
-with gr.Blocks(title="Futurisys Carbon Predictor") as demo:
-    gr.Markdown("# 🏢 Futurisys : Simulateur d'Empreinte Carbone")
-    gr.Markdown("Entrez les caractéristiques du bâtiment pour estimer ses émissions.")
+# Interface Gradio
+with gr.Blocks(title="Futurisys Prediction Tool") as demo:
+    gr.Markdown("Futurisys : Prédiction Carbone")
     
     with gr.Row():
-        with gr.Column():
-            surface = gr.Number(label="Surface Totale (m²)", value=1000)
-            year = gr.Slider(minimum=1900, maximum=2025, step=1, label="Année de construction", value=2000)
-            b_type = gr.Dropdown(
-                choices=["Hotel", "Office", "Retail", "Warehouse"], 
-                label="Type de bâtiment", 
-                value="Office"
-            )
-            btn = gr.Button("Estimer l'empreinte", variant="primary")
-        
-        with gr.Column():
-            output = gr.Textbox(label="Résultat")
+        gfa_input = gr.Number(label="Surface Totale (GFA m²)", value=1000)
+        year_input = gr.Number(label="Année de construction", value=2020)
+        type_input = gr.Dropdown(
+            label="Type de bâtiment", 
+            choices=["Office", "Hotel", "Retail", "Warehouse"],
+            value="Office"
+        )
+    
+    submit_btn = gr.Button("Calculer l'empreinte")
+    output = gr.Textbox(label="Résultat")
 
-    btn.click(fn=predict_carbon, inputs=[surface, year, b_type], outputs=output)
+    submit_btn.click(
+        fn=predict_carbon, 
+        inputs=[gfa_input, year_input, type_input], 
+        outputs=output
+    )
 
-#%% Lancement de l'interface
 if __name__ == "__main__":
-    demo.launch(inline=True)
+    demo.launch(server_port=7860)
