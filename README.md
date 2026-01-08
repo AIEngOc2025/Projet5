@@ -1,75 +1,103 @@
-# Futurisys - Energy & Carbon Prediction API
+# Déploiement du Modèle ML de Prédiction Carbone (POC) Futurisys:
 
-## Présentation du Projet
+Bienvenue dans le dépôt du Proof of Concept (POC) de Futurisys. Ce projet expose un modèle de Machine Learning via une API robuste, permettant de prédire l'empreinte carbone des bâtiments en fonction de leurs caractéristiques.
 
-Ce Proof of Concept (POC) fournit une infrastructure robuste pour exposer un modèle de Machine Learning spécialisé dans la prédiction de l'empreinte carbone et de la consommation énergétique des bâtiments.
+📐 Architecture du Système
+Le projet repose sur une architecture moderne de type "API-First" garantissant la traçabilité et la performance.
 
-L'objectif est de transformer un modèle expérimental en un service de production fiable, testé et automatisé.
+Interface Utilisateur (Gradio) : Saisie intuitive des caractéristiques du bâtiment.
 
-## Fonctionnalités Clés
+API REST (FastAPI) : Moteur central gérant la validation (Pydantic), l'exécution du modèle et la persistance.
 
-- API RESTful : Développée avec FastAPI pour une performance optimale.
+Base de Données (PostgreSQL) : Archivage systématique de chaque prédiction pour audit et ré-entraînement.
 
-- Persistance des données : Chaque prédiction est archivée dans une base PostgreSQL.
+Pipeline CI/CD (GitHub Actions) : Automatisation des tests unitaires et du déploiement vers Hugging Face Spaces.
 
-- Validation stricte : Utilisation de Pydantic pour garantir l'intégrité des données entrantes.
+🛠️ Justifications Techniques
+FastAPI : Choisi pour sa rapidité d'exécution et sa gestion automatique de la documentation (Swagger). La validation de type via Pydantic assure qu'aucune donnée malformée n'atteint le modèle.
 
-- Interface Interactive : Documentation Swagger UI générée automatiquement.
+PostgreSQL & SQLAlchemy : L'utilisation d'un ORM permet une gestion rigoureuse de la base de données, assurant une traçabilité complète (Inputs/Outputs), indispensable pour les futurs audits de conformité carbone.
 
-- CI/CD : Pipeline automatisé testant le code et déployant vers Hugging Face Spaces.
+Pytest-cov : La fiabilité est garantie par une suite de tests unitaires avec un objectif de couverture > 80%, minimisant les régressions lors des mises à jour.
 
-## Installation et Configuration
-1. Clonage et Environnement
+🚀 Installation et Configuration
+Prérequis
 
-Bash
-git clone https://github.com/votre-repo/projet5.git
-cd projet5
-python -m venv projet5_venv
-source projet5_venv/bin/activate  # MacOS/Linux
+Python 3.9+
+
+PostgreSQL (ou Docker)
+
+Installation locale
+
+``` bash
+git clone https://github.com/votre-repo/futurisys-ml-api.git
+cd futurisys-ml-api 
+```
+
+Créer l'environnement virtuel :
+
+```Bash
+# creation de l'environnemt virtuel
+python -m venv <NOM_DE_L'ENVIRONNEMENT_VIRTUEL>
+
+#lancement de l'environnement virtuel 
+source venv/bin/activate # MacOS
+venv\Scripts\activate  # Windows: 
+
+# installation des bibliotèques python 
 pip install -r requirements.txt
-2. Base de données
+```
 
-L'API nécessite PostgreSQL. Configurez votre variable d'environnement :
+Lancer les services :
+`
+API:  
 
-Bash
-export DATABASE_URL="postgresql://user:projet5@localhost:5432/futurisys_db"
-3. Lancement
-
-Bash
+```bash
 uvicorn app.main:app --reload
-L'API sera accessible sur http://127.0.0.1:8000. La documentation interactive est disponible sur /docs.
+```
 
-## Schéma de Données
+UI:
 
-Le modèle de données assure la traçabilité complète des prédictions effectuées :
+```bash
+python app/ui.py
+```
 
-Colonne	Type	Description
-id	Integer	Clé primaire unique
-property_gfa_total	Float	Surface totale du bâtiment
-year_built	Integer	Année de construction
-building_type	String	Type d'usage (Office, Hotel, etc.)
-prediction_value	Float	Résultat du modèle ML
-created_at	DateTime	Horodatage automatique
-🧪 Tests et Qualité
-Pour garantir la fiabilité demandée, une suite de tests unitaires est intégrée.
+Documentation de l'API
+Une fois l'API lancée, la documentation interactive est accessible sur :
 
-Bash
-## Lancer les tests et voir le rapport de couverture
+Swagger UI : http://127.0.0.1:8000/docs
 
-python -m pytest --cov=app tests/
+ReDoc : http://127.0.0.1:8000/redoc
 
-## Pipeline CI/CD
+Exemple de requête (CURL) :
 
-Le workflow GitHub Actions (.github/workflows/main.yml) automatise :
+```bash
+curl -X 'POST' \
+  'http://127.0.0.1:8000/predict' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "property_gfa_total": 2500,
+  "year_built": 2010,
+  "building_type": "Office"
+}'
+```
 
-L'initialisation : Installation des dépendances et de PostgreSQL en environnement de test.
+Protocole de Maintenance
+Pour garantir la pertinence des prédictions dans le temps, le protocole suivant est établi :
 
-La validation : Exécution de Pytest avec un seuil de couverture.
+Surveillance (Monitoring) : Vérification hebdomadaire des logs de l'API pour identifier d'éventuels écarts de distribution des données (Data Drift).
 
-Le déploiement : Mise à jour automatique du Space Hugging Face après succès des tests sur la branche main.
+Ré-entraînement : Le modèle est ré-entraîné trimestriellement en utilisant les données collectées dans la base PostgreSQL, enrichies des valeurs réelles de consommation collectées sur le terrain.
 
-## Sécurité et Authentification
+Versioning : Chaque version du modèle est taguée via Git (ex: v1.0.1). Toute mise à jour doit passer par le pipeline CI/CD et valider 100% des tests unitaires.
 
-- Validation des schémas : Protection contre les injections de données malformées via Pydantic.
+Tests et Qualité
+Lancer la suite de tests et générer le rapport de couverture :
 
-- Gestion des Secrets : Utilisation des variables d'environnement et des GitHub Secrets (HF_TOKEN) pour ne jamais exposer de clés en clair.
+```Bash
+python -m pytest --cov=app --cov-report=html
+```
+
+Le rapport détaillé sera disponible dans le dossier htmlcov/index.html.
+
+Développé par CM pour Futurisys.

@@ -9,7 +9,6 @@ on:
 jobs:
   quality-check:
     runs-on: ubuntu-latest
-    # Ajout d'un conteneur Postgres pour que l'app puisse démarrer durant les tests
     services:
       postgres:
         image: postgres:15
@@ -30,10 +29,10 @@ jobs:
         with:
           lfs: true
 
-      - name: Set up Python
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13' # Aligné sur ton environnement local
+          python-version: '3.12' # Version stabilisée pour éviter les erreurs de compilation Pandas/Cython
 
       - name: Install dependencies
         run: |
@@ -43,7 +42,6 @@ jobs:
 
       - name: Run Tests with Coverage
         env:
-          # On pointe vers le service postgres ci-dessus
           DATABASE_URL: postgresql://user:pass@localhost:5432/testdb
           PYTHONPATH: . 
         run: |
@@ -57,27 +55,29 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
+          fetch-depth: 0 # Important pour Hugging Face Spaces
 
-      - name: Set up Python
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Install Hugging Face Hub
         run: pip install huggingface_hub
 
       - name: Push to Hugging Face
         env:
-          HF_TOKEN: ${{ secrets.HF_SECRET }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }} # Utilisation du secret harmonisé
         run: |
           python -c "
+          import os
           from huggingface_hub import HfApi
           api = HfApi()
           api.upload_folder(
               folder_path='.',
               repo_id='dataChaser/predict_building_carbon_footprint',
               repo_type='space',
-              token='${{ secrets.HF_TOKEN }}',
+              token=os.environ['HF_TOKEN'],
               ignore_patterns=['.git*', 'projet5_venv/', '__pycache__/', 'tests/', '.gradio/']
           )
           "
