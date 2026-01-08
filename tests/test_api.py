@@ -1,17 +1,20 @@
+"""Tests pour l'API FastAPI définie dans app/main.py."""
+
+#%%
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.main import app
+from app.main import api
 from app.database import Base, get_db
 
-# --- Configuration d'une base de données de test (SQLite en mémoire) ---
+#%% --- Configuration d'une base de données de test (SQLite en mémoire) ---
 # Cela évite de polluer votre vraie base PostgreSQL pendant les tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_temp.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# On remplace la dépendance get_db par celle de test
+#%% On remplace la dépendance get_db par celle de test
 def override_get_db():
     try:
         db = TestingSessionLocal()
@@ -19,9 +22,9 @@ def override_get_db():
     finally:
         db.close()
 
-app.dependency_overrides[get_db] = override_get_db
+api.dependency_overrides[get_db] = override_get_db
 
-client = TestClient(app)
+client = TestClient(api)
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_db():
@@ -31,7 +34,7 @@ def setup_db():
     # Supprime les tables à la fin
     Base.metadata.drop_all(bind=engine)
 
-# --- Les Tests ---
+#%% --- Les Tests ---
 
 def test_read_root():
     response = client.get("/")
