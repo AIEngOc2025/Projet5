@@ -1,11 +1,11 @@
 """Tests pour l'API FastAPI définie dans app/main.py."""
 
-#%%
+import json
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.main import api
+from app.main import api, predict_energy
 from app.database import Base, get_db
 
 #%% --- Configuration d'une base de données de test (SQLite en mémoire) ---
@@ -44,11 +44,27 @@ def test_read_root():
 def test_predict_success():
     # Simule un envoi de données valides
     payload = {
-        "property_gfa_total": 1500.5,
-        "year_built": 1995,
-        "building_type": "Office"
+        # Données issues de l'utilisateur
+            'property_gfa_total': 2000,
+            "YearBuilt": 1980,
+            "BuildingType": "Office",
+
+            # Colonnes obligatoires pour le modèle (valeurs par défaut/moyennes)
+            "PrimaryPropertyType": "Other",
+            "Neighborhood": "DOWNTOWN",
+            "CouncilDistrictCode": 1,
+            "NumberofBuildings": 1,
+            "NumberofFloors": 1,
+            "PropertyGFAParking": 0,
+            "ENERGYSTARScore": 50,
+            "SteamUse(kBtu)": 0,
+            "NaturalGas(therms)": 0,
+            "ComplianceStatus": "Compliant",
+            "GHGEmissionsIntensity": 0
     }
+
     response = client.post("/predict", json=payload)
+                           
     
     assert response.status_code == 200
     data = response.json()
@@ -56,6 +72,7 @@ def test_predict_success():
     assert data["property_gfa_total"] == 1500.5
     assert "id" in data
 
+#%% --- Test des erreurs ---
 def test_predict_invalid_data():
     # Teste la validation Pydantic (on envoie un string au lieu d'un float)
     payload = {

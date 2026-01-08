@@ -10,6 +10,7 @@ venv/
 .coverage
 htmlcov/
 *.log
+test_api.py
 convention_de_nommage_des_branches_git_du_projet.txt
 
 

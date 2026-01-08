@@ -1,4 +1,5 @@
-"""Schemas for the prediction API."""
+"""ce script contient les schémas Pydantic pour la validation des données d'entrée et
+de sortie de l'API."""
 #%% app/schemas.py
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
@@ -10,7 +11,19 @@ class PredictionBase(BaseModel):
     year_built: int
     building_type: str
 
-#%% Schéma utilisé pour la création (peut être étendu si besoin)
+    # Ajout des champs supplémentaires pour la prédiction complète
+    primary_property_type: Optional[str] = "Other"
+    neighborhood: Optional[str] = "DOWNTOWN"
+    council_district_code: Optional[int] = 1
+    number_of_buildings: Optional[int] = 1
+    number_of_floors: Optional[int] = 1
+    property_gfa_parking: Optional[float] = 0
+    energy_stars_energy_star_score: Optional[float] = 50
+    steam_use_kBtu_: Optional[float] = 0
+    natural_gas_therms_: Optional[float] = 0
+    compliance_status: Optional[str] = "Compliant"
+    ghg_emissions_intensity: Optional[float] = 0  
+#%% Schéma utilisé pour la création de données (peut être étendu si besoin)
 class PredictionCreate(PredictionBase):
     pass
 

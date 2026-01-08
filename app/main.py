@@ -2,6 +2,7 @@
 Fichier principal finalisé pour le POC Futurisys.
 Gère l'inférence avec le modèle réel (46 colonnes) et la persistance PostgreSQL.
 """
+#%%
 import joblib
 import pandas as pd
 from pathlib import Path
@@ -23,7 +24,7 @@ async def lifespan(api: FastAPI):
         raise FileNotFoundError(f"Modèle introuvable à : {model_path}")
     
     # Chargement du Pipeline complet
-    ml_models["energy_model"] = joblib.load(model_path)
+    ml_models["energy_model"] = joblib.load("models/model_energy.joblib")
     print("✅ Pipeline ML chargé et prêt pour l'inférence.")
     yield
     ml_models.clear()
