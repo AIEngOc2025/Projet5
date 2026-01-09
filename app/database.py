@@ -28,7 +28,7 @@ def get_db():
 #%% creation du modèle des données 
 from sqlalchemy import Column, Integer, Float, String, DateTime
 from sqlalchemy.sql import func
-from .database import Base
+
 
 class PredictionRecord(Base):
     __tablename__ = "predictions"
