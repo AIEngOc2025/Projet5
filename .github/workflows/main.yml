@@ -69,15 +69,19 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }} # Utilisation du secret harmonisé
         run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "❌ ERREUR : Le secret HF_TOKEN est vide ou non configuré dans GitHub."
+            exit 1
+          fi
           python -c "
           import os
           from huggingface_hub import HfApi
-          api = HfApi()
+          token = os.environ.get('HF_TOKEN')
+          api = HfApi(token=token)
           api.upload_folder(
               folder_path='.',
               repo_id='dataChaser/predict_building_carbon_footprint',
               repo_type='space',
-              token=os.environ['HF_TOKEN'],
               ignore_patterns=['.git*', 'projet5_venv/', '__pycache__/', 'tests/', '.gradio/']
           )
           "
