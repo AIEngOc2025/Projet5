@@ -40,37 +40,39 @@ def test_read_root():
     response = client.get("/")
     assert response.status_code == 200
     assert "message" in response.json()
-
+#%% --- Test de la prédiction réussie ---
 def test_predict_success():
-    # Simule un envoi de données valides
-    payload = {
-        # Données issues de l'utilisateur
-            'property_gfa_total': 2000,
-            "YearBuilt": 1980,
-            "BuildingType": "Office",
+    # Utiliser "with" permet d'exécuter le lifespan et de charger le modèle
+    with TestClient(api) as client:
+        payload = {
+            "property_gfa_total": 2000.0,
+            "year_built": 1980,
+            "building_type": "Office",
+            "primary_property_type": "Other",
+            "neighborhood": "DOWNTOWN",
+            "council_district_code": 1,
+            "number_of_buildings": 1,
+            "number_of_floors": 1,
+            "property_gfa_parking": 0.0,
+            "energy_star_score": 50.0,
+            "steam_use": 0.0,
+            "natural_gas": 0.0,
+            "compliance_status": "Compliant",
+            "ghg_emissions_intensity": 0.0
+        }
 
-            # Colonnes obligatoires pour le modèle (valeurs par défaut/moyennes)
-            "PrimaryPropertyType": "Other",
-            "Neighborhood": "DOWNTOWN",
-            "CouncilDistrictCode": 1,
-            "NumberofBuildings": 1,
-            "NumberofFloors": 1,
-            "PropertyGFAParking": 0,
-            "ENERGYSTARScore": 50,
-            "SteamUse(kBtu)": 0,
-            "NaturalGas(therms)": 0,
-            "ComplianceStatus": "Compliant",
-            "GHGEmissionsIntensity": 0
-    }
-
-    response = client.post("/predict", json=payload)
-                           
-    
-    assert response.status_code == 200
-    data = response.json()
-    assert "prediction_value" in data
-    assert data["property_gfa_total"] == 1500.5
-    assert "id" in data
+        response = client.post("/predict", json=payload)
+        
+        # Debugging si l'erreur 500 persiste
+        if response.status_code != 200:
+            print(f"Détail de l'erreur : {response.json()}")
+                               
+        assert response.status_code == 200
+        data = response.json()
+        
+        assert "prediction_value" in data
+        assert data["property_gfa_total"] == 2000.0
+        assert "id" in data
 
 #%% --- Test des erreurs ---
 def test_predict_invalid_data():
