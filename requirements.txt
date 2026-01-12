@@ -3,6 +3,8 @@ fastapi>=0.104.0
 uvicorn>=0.24.0
 pydantic>=2.4.0
 python-multipart
+alembic>=1.11.1
+SQLAlchemy>=2.0.0
 
 # --- Machine Learning ---
 pandas>=2.1.0
