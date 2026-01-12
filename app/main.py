@@ -2,6 +2,7 @@
 Fichier principal finalisé pour le POC Futurisys.
 Gère l'inférence avec le modèle réel (46 colonnes) et la persistance PostgreSQL.
 """
+# ==========================================================================================
 #%% IMPORTATIONS DES BIBLIOTHEQUES
 import joblib
 import pandas as pd
@@ -13,6 +14,7 @@ from typing import List
 from . import models, schemas, crud
 from .database import engine, get_db
 
+#=========================================================================================
 #%% Stockage global du modèle pour éviter de le recharger à chaque requête
 ml_models = {}
 
@@ -53,6 +55,7 @@ def predict_energy(payload: schemas.PredictionCreate, db: Session = Depends(get_
     Endpoint principal : reçoit 3 paramètres, complète les 14 colonnes, 
     prédit et enregistre en base de données.
     """
+    
     try:
         # 1. Préparation du dictionnaire complet exigé par le ColumnTransformer
         # On injecte les données de l'UI et on complète avec des valeurs neutres
@@ -75,11 +78,15 @@ def predict_energy(payload: schemas.PredictionCreate, db: Session = Depends(get_
             "ComplianceStatus": "Compliant",
             "GHGEmissionsIntensity": 0
         }
-
+        # 1. Sauvegarder l'entrée brute immédiatement
+        #crud.save_user_input(db, data=full_data)
         # Conversion en DataFrame (format requis par Scikit-Learn)
         input_df = pd.DataFrame([full_data])
 
-        # 2. Inférence via le Pipeline chargé en mémoire
+        # 2. Insère les données utilisateurs dans la base de données
+        crud.save_user_input(db, full_data)
+
+        # 3. Inférence via le Pipeline chargé en mémoire
         model = ml_models["energy_model"]
         prediction_result = model.predict(input_df)
         
