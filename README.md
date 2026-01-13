@@ -24,9 +24,9 @@ Le projet repose sur une architecture moderne de type "API-First" garantissant l
 
 -Pipeline CI/CD (GitHub Actions) : Automatisation des tests unitaires et du déploiement vers Hugging Face Spaces.
 
-```mermaid 
-
 ### Diagramme des classes (structure et données)
+
+```mermaid 
 classDiagram
     class Base {
         <<SQLAlchemy>>
