@@ -1,8 +1,9 @@
 """
 Fichier principal finalisé pour le POC Futurisys.
-Gère l'inférence avec le modèle réel (46 colonnes) et la persistance PostgreSQL.
+Gère l'inférence avec le modèle réel (14 colonnes) et la persistance PostgreSQL.
 """
-#%%
+# ==========================================================================================
+#%% IMPORTATIONS DES BIBLIOTHEQUES
 import joblib
 import pandas as pd
 from pathlib import Path
@@ -13,7 +14,8 @@ from typing import List
 from . import models, schemas, crud
 from .database import engine, get_db
 
-# Stockage global du modèle pour éviter de le recharger à chaque requête
+#=========================================================================================
+#%% Stockage global du modèle pour éviter de le recharger à chaque requête
 ml_models = {}
 
 @asynccontextmanager
@@ -25,13 +27,14 @@ async def lifespan(api: FastAPI):
     
     # Chargement du Pipeline complet
     ml_models["energy_model"] = joblib.load("models/model_energy.joblib")
-    print("✅ Pipeline ML chargé et prêt pour l'inférence.")
+    print("Pipeline ML chargé et prêt pour l'inférence.")
     yield
     ml_models.clear()
 
-# Création des tables PostgreSQL
-models.Base.metadata.create_all(bind=engine)
+#%% Création des tables PostgreSQL
+#models.Base.metadata.create_all(bind=engine)
 
+#%% Initialisation de l'API FastAPI
 api = FastAPI(
     title="Futurisys ML API", 
     version="1.0.0", 
@@ -39,16 +42,20 @@ api = FastAPI(
     description="API industrielle pour la prédiction énergétique."
 )
 
+#%% Définition des endpoints de l'API FastAPI : 
+# get : récupère l'endpoint racine 
 @api.get("/")
 def read_root():
     return {"message": "API Futurisys opérationnelle. Accédez à /docs pour tester."}
 
+#post : insère une nouvelle prédiction
 @api.post("/predict", response_model=schemas.PredictionResponse)
 def predict_energy(payload: schemas.PredictionCreate, db: Session = Depends(get_db)):
     """
-    Endpoint principal : reçoit 3 paramètres, complète les 46 colonnes, 
+    Endpoint principal : reçoit 3 paramètres, complète les 14 colonnes, 
     prédit et enregistre en base de données.
     """
+    
     try:
         # 1. Préparation du dictionnaire complet exigé par le ColumnTransformer
         # On injecte les données de l'UI et on complète avec des valeurs neutres
@@ -71,11 +78,15 @@ def predict_energy(payload: schemas.PredictionCreate, db: Session = Depends(get_
             "ComplianceStatus": "Compliant",
             "GHGEmissionsIntensity": 0
         }
-
+        # 1. Sauvegarder l'entrée brute immédiatement
+        #crud.save_user_input(db, data=full_data)
         # Conversion en DataFrame (format requis par Scikit-Learn)
         input_df = pd.DataFrame([full_data])
 
-        # 2. Inférence via le Pipeline chargé en mémoire
+        # 2. Insère les données utilisateurs dans la base de données
+        crud.save_user_input(db, full_data)
+
+        # 3. Inférence via le Pipeline chargé en mémoire
         model = ml_models["energy_model"]
         prediction_result = model.predict(input_df)
         
@@ -98,7 +109,9 @@ def predict_energy(payload: schemas.PredictionCreate, db: Session = Depends(get_
         # Capture toute autre erreur (DB, Pipeline, etc.)
         raise HTTPException(status_code=500, detail=f"Erreur interne du serveur : {str(e)}")
 
+# get history : récupère l'historique des prédictions enregistrées
 @api.get("/history", response_model=List[schemas.PredictionResponse])
+
 def get_history(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     """ Récupère l'historique des prédictions enregistrées """
     return crud.get_predictions(db, skip=skip, limit=limit)

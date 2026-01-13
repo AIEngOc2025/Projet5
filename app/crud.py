@@ -1,7 +1,27 @@
-"""effectue des opérations crud sur les prédictions dans la base de données."""
+"""effectue des opérations crud sur les caractéristiques et les prédictions  dans la base de données."""
+
+# =========================================================================================
+#%% fonction CRUD pour enregistrer les entrées utilisateurs 
+
 from sqlalchemy.orm import Session
 from . import models, schemas
 
+from .database import UserInputRecord
+
+from .models import UserInputRecord
+
+def save_user_input(db: Session, data: dict):
+    db_input = UserInputRecord(
+        property_gfa_total=data.get("PropertyGFATotal"),
+        year_built=data.get("YearBuilt"),
+        building_type=data.get("BuildingType")
+    )
+    db.add(db_input)
+    db.commit() # Important pour persister avant la suite
+    db.refresh(db_input)
+    return db_input
+
+#%% fonction CRUD pour les prédictions
 def create_prediction(db: Session, prediction_data: schemas.PredictionCreate, pred_value: float):
     """
     Enregistre une nouvelle prédiction dans la base de données.
@@ -22,7 +42,7 @@ def create_prediction(db: Session, prediction_data: schemas.PredictionCreate, pr
     db.refresh(db_prediction)
     
     return db_prediction
-
+#%% fonction CRUD pour récupérer l'historique des prédictions
 def get_predictions(db: Session, skip: int = 0, limit: int = 100):
     """
     Récupère l'historique des prédictions (utile pour le monitoring).

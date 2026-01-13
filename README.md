@@ -1,4 +1,14 @@
-# Déploiement du Modèle ML de Prédiction Carbone (POC) Futurisys:
+---
+title: Déploiement du Modèle ML de Prédiction Carbone (POC) Futurisys
+sdk: gradio
+emoji: 📚
+colorFrom: gray
+colorTo: blue
+sdk_version: 6.2.0
+
+---
+
+## Déploiement du Modèle ML de Prédiction Carbone (POC) Futurisys:
 
 Bienvenue dans le dépôt du Proof of Concept (POC) de Futurisys. Ce projet expose un modèle de Machine Learning via une API robuste, permettant de prédire l'empreinte carbone des bâtiments en fonction de leurs caractéristiques.
 
