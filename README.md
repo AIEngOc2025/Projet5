@@ -47,10 +47,10 @@ classDiagram
 
     Base <|-- UserInputRecord
     Base <|-- PredictionRecord
+```
 
 ### Diagramme de Séquence (Flux de Prédiction)
 Ce diagramme illustre le parcours d'une donnée, de la saisie utilisateur jusqu'à l'archivage sécurisé en base de données.
-``` 
 
 ```mermaid
 sequenceDiagram
