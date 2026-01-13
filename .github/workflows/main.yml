@@ -91,7 +91,7 @@ jobs:
               repo_id='dataChaser/predict_building_carbon_footprint',
               repo_type='space',
               token=os.environ['HF_TOKEN'],
+              ignore_patterns=['.git*', 'tests/', '__pycache__/', 'venv/']
               ignore_patterns=['.git*', 'projet5_venv/', '__pycache__/', 'tests/', '.gradio/']
->>>>>>> f7eeb4eeceb0ac0e007c237db4ae59afb85ce38b
           )
           "
