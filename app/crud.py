@@ -8,6 +8,8 @@ from . import models, schemas
 
 from .database import UserInputRecord
 
+from .models import UserInputRecord
+
 def save_user_input(db: Session, data: dict):
     db_input = UserInputRecord(
         property_gfa_total=data.get("PropertyGFATotal"),
@@ -15,7 +17,7 @@ def save_user_input(db: Session, data: dict):
         building_type=data.get("BuildingType")
     )
     db.add(db_input)
-    db.commit()
+    db.commit() # Important pour persister avant la suite
     db.refresh(db_input)
     return db_input
 

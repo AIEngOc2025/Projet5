@@ -1,6 +1,6 @@
 """
 Fichier principal finalisé pour le POC Futurisys.
-Gère l'inférence avec le modèle réel (46 colonnes) et la persistance PostgreSQL.
+Gère l'inférence avec le modèle réel (14 colonnes) et la persistance PostgreSQL.
 """
 # ==========================================================================================
 #%% IMPORTATIONS DES BIBLIOTHEQUES
@@ -32,7 +32,7 @@ async def lifespan(api: FastAPI):
     ml_models.clear()
 
 #%% Création des tables PostgreSQL
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 
 #%% Initialisation de l'API FastAPI
 api = FastAPI(
