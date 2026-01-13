@@ -67,7 +67,7 @@ sequenceDiagram
     API->>DB: crud.save_user_input()
     DB-->>API: Confirmation ID (Log d'Audit)
     
-    Note over API: Inférence (Pipeline 14 colonnes)
+    Note over API: Inférence (Pipeline 14 features)
     
     API->>ML: model.predict(input_df)
     ML-->>API: Valeur prédite (CO2/Énergie)
