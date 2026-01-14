@@ -43,7 +43,9 @@ API ➔ enregistre l'input + l'output dans PostgreSQL.
 API ➔ renvoie le résultat à l'UI.
 
 === Diagramme des séquences/ des flux  === 
+
 ```mermaid
+sequenceDiagram
     autonumber
     actor User as Utilisateur (Gradio)
     participant API as FastAPI
