@@ -20,7 +20,7 @@ Le projet repose sur une architecture moderne de type "API-First" garantissant l
 
 -API REST (FastAPI) : Moteur central gérant la validation (Pydantic), l'exécution du modèle et la persistance.
 
--Base de Données (PostgreSQL) : Archivage systématique de chaque prédiction pour audit et ré-entraînement.
+-Base de Données (PostgreSQL) : Archivage systématique de chaque donnée utilisateur , de la prédiction pour audit et ré-entraînement.
 
 -Pipeline CI/CD (GitHub Actions) : Automatisation des tests unitaires et du déploiement vers Hugging Face Spaces.
 
