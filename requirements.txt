@@ -161,8 +161,6 @@ threadpoolctl==3.6.0
 tifffile==2023.9.26
 timm==0.4.12
 tomlkit==0.13.3
-torch==2.1.0
-torchvision==0.16.0
 tqdm==4.65.0
 typer==0.21.0
 typer-slim==0.21.0
