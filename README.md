@@ -43,7 +43,7 @@ Prérequis:
 -Installation locale
 
 ``` bash
-git clone https://github.com/votre-repo/futurisys-ml-api.git
+git clone https://github.com/AIEngOc2025/Projet5.git
 cd futurisys-ml-api 
 ```
 

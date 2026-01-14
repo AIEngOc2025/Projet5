@@ -71,7 +71,7 @@ def test_user_input_persistence():
         if response.status_code != 200:
             print(f"Erreur: {response.json()}")
             
-        assert response.status_code == 200
+        #assert response.status_code == 200
 
         # Vérification en base
         db = TestingSessionLocal()
@@ -80,7 +80,7 @@ def test_user_input_persistence():
         print(f"\nInput sauvegardé ID: {db_record.id}")
         db.close()
     #---
-    #assert response.status_code == 200
+    assert response.status_code == 200
 
     # 2. Vérification directe en base de données
     db = TestingSessionLocal()
