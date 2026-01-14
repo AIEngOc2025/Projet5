@@ -96,6 +96,32 @@ curl -X 'POST' \
 }'
 ```
 
+### Sécurisation et Authentification
+
+Pour ce POC, la sécurisation a été renforcée pour répondre aux standards industriels :
+
+Authentification par API Key : L'accès aux endpoints sensibles (comme /predict) est protégé par un Header X-API-KEY. Seuls les clients autorisés peuvent soumettre des données.
+
+Validation des schémas : Utilisation stricte de Pydantic pour prévenir les injections de données malveillantes.
+
+Gestion des Secrets : Les identifiants de base de données et les clés API sont gérés via des variables d'environnement (.env) et ne sont jamais stockés en clair dans le code.
+
+CORS Policy : Restriction des domaines autorisés à interroger l'API pour éviter les attaques de type Cross-Origin.
+
+### Déploiement
+
+Le déploiement est automatisé via une approche Cloud-Native :
+
+Hugging Face Spaces : Hébergement de la partie Gradio pour une démonstration publique.
+
+Docker : L'application est conteneurisée pour garantir la reproductibilité des environnements.
+
+CI/CD : Chaque git push déclenche des tests automatiques sur GitHub Actions. Si les tests réussissent, l'image est déployée.
+
+la BDD necessite d'installer sur github un environment secret  <DATABASE_URL> en local prendre l'url de votre BDD
+online sqlAlchemy s'en charge
+HuggingFace necessite un repository secret <HF_TOKEN>
+
 ### Protocole de Maintenance
 
 Pour garantir la pertinence des prédictions dans le temps, le protocole suivant est établi :
