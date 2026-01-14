@@ -10,3 +10,4 @@ pydantic
 pydantic-settings
 gradio
 python-multipart
+alembic>=1.11.1
