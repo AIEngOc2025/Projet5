@@ -79,9 +79,9 @@ python app/ui.py
 
 Une fois l'API lancée, la documentation interactive est accessible sur :
 
-Swagger UI : http://127.0.0.1:8000/docs
+Swagger UI : <http://127.0.0.1:8000/docs>
 
-ReDoc : http://127.0.0.1:8000/redoc
+ReDoc : <http://127.0.0.1:8000/redoc>
 
 ### Exemple de requête (CURL)
 
@@ -116,4 +116,4 @@ python -m pytest --cov=app --cov-report=html
 
 Le rapport détaillé sera disponible dans le dossier htmlcov/index.html.
 
-Développé par CM pour Futurisys.
+Développé par CM pour Futurisys
