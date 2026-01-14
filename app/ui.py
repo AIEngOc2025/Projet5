@@ -38,12 +38,12 @@ def predict_carbon(gfa, year, btype):
             result = response.json()
             pred = result.get("prediction_value", 0)
             record_id = result.get("id", "N/A")
-            return f"✅ PRÉDICTION RÉUSSIE\n\nRésultat : {pred:.2f} tCO2eq\nID Archivage : {record_id}\n\nNote : Calcul basé sur le profil standard Futurisys."
+            return f"PRÉDICTION RÉUSSIE\n\nRésultat : {pred:.2f} tCO2eq\nID Archivage : {record_id}\n\nNote : Calcul basé sur le profil standard Futurisys."
         else:
-            return f"❌ Erreur API ({response.status_code}) : {response.text}"
+            return f"Erreur API ({response.status_code}) : {response.text}"
             
     except Exception as e:
-        return f"❌ Erreur de connexion : {str(e)}"
+        return f"Erreur de connexion : {str(e)}"
 
 # --- Interface avec Thème Orange Futurisys ---
 custom_theme = gr.themes.Soft(
@@ -56,7 +56,7 @@ custom_theme = gr.themes.Soft(
 with gr.Blocks(title="Futurisys ML Tool") as demo:
     gr.Markdown(
         """
-        # 🏢 <span style='color: #FF8C00;'>Futurisys</span> : Calculateur Carbone
+        #<span style='color: #FF8C00;'>Futurisys</span> : Calculateur Carbone
         *Interface de démonstration POC - Validation du modèle prédictif.*
         """
     )

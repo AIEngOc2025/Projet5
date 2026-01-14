@@ -43,17 +43,18 @@ api = FastAPI(
 )
 
 #%% Définition des endpoints de l'API FastAPI : 
-# get : récupère l'endpoint racine 
+# récupère l'endpoint racine 
 @api.get("/")
 def read_root():
     return {"message": "API Futurisys opérationnelle. Accédez à /docs pour tester."}
 
-#post : insère une nouvelle prédiction
+#post : insère une nouvelle prédiction à la  BDD
 @api.post("/predict", response_model=schemas.PredictionResponse)
 def predict_energy(payload: schemas.PredictionCreate, db: Session = Depends(get_db)):
     """
     Endpoint principal : reçoit 3 paramètres, complète les 14 colonnes, 
-    prédit et enregistre en base de données.
+    enregistre les données utilisateur à la table user_input sur la BDD
+    prédit et enregistre la prédiction sur la table predictions dans la BDD.
     """
     
     try:
