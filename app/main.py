@@ -53,7 +53,7 @@ def read_root():
 def predict_energy(payload: schemas.PredictionCreate, db: Session = Depends(get_db)):
     """
     Endpoint principal : reçoit 3 paramètres, complète les 14 colonnes, 
-    enregistre les données utilisateur à la table user_input sur la BDD
+    enregistre les données utilisateur à la table user_inputs dans la BDD
     prédit et enregistre la prédiction sur la table predictions dans la BDD.
     """
     
