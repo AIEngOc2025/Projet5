@@ -1,7 +1,7 @@
 """Tests pour l'API FastAPI avec vérification de la table user_inputs."""
 #%% --- Imports ---
 import pytest
-from sqlalchemy.pool import StaticPool # <--- AJOUT CRUCIAL
+from sqlalchemy.pool import StaticPool 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -14,7 +14,7 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False},
-    poolclass=StaticPool, # <--- FORCE le partage de la RAM entre Test et API
+    poolclass=StaticPool, 
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
