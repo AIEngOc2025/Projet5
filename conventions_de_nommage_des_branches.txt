@@ -1,6 +1,5 @@
 # Convention de nommage des branches git du projet 
 
-Pour Futurisys, adoptez le workflow GitHub Flow :
 
 main : Code stable, toujours prêt pour la production.
 
