@@ -12,13 +12,13 @@ def seed_database():
     file_path = '2016_Building_Energy_Benchmarking.csv'
     
     if not os.path.exists(file_path):
-        print(f"❌ Erreur : Le fichier {file_path} est introuvable.")
+        print(f"Erreur : Le fichier {file_path} est introuvable.")
         return
 
     print(f"📖 Lecture du fichier {file_path}...")
     df = pd.read_csv(file_path)
 
-    print("🚀 Début de l'insertion dans PostgreSQL...")
+    print("Début de l'insertion dans PostgreSQL...")
     
     try:
         count = 0
@@ -46,14 +46,14 @@ def seed_database():
             # Commit par lots de 100 pour optimiser les performances
             if count % 100 == 0:
                 db.commit()
-                print(f"✅ {count} lignes insérées...")
+                print(f"{count} lignes insérées...")
 
         db.commit() # Dernier commit pour le reste
         print(f"🏁 Terminé ! {count} enregistrements insérés avec succès.")
 
     except Exception as e:
         db.rollback()
-        print(f"❌ Une erreur est survenue, rollback effectué : {e}")
+        print(f"Une erreur est survenue, rollback effectué : {e}")
     finally:
         db.close()
 

@@ -1,10 +1,13 @@
+"""ce script créé l'interface graphique présentée à l'utilisatuer """
 import gradio as gr
 import requests
 import os
 
-# Configuration de l'URL de l'API
+
+#%% Configuration de l'URL de l'API
 API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict")
 
+#%% fonctionne de prédiction de l'empreinte carbone
 def predict_carbon(gfa, year, btype):
     """
     Prépare le payload avec les 14 colonnes attendues par le backend
@@ -38,12 +41,12 @@ def predict_carbon(gfa, year, btype):
             result = response.json()
             pred = result.get("prediction_value", 0)
             record_id = result.get("id", "N/A")
-            return f"✅ PRÉDICTION RÉUSSIE\n\nRésultat : {pred:.2f} tCO2eq\nID Archivage : {record_id}\n\nNote : Calcul basé sur le profil standard Futurisys."
+            return f"PRÉDICTION RÉUSSIE\n\nRésultat : {pred:.2f} tCO2eq\nID Archivage : {record_id}\n\nNote : Calcul basé sur le profil standard Futurisys."
         else:
-            return f"❌ Erreur API ({response.status_code}) : {response.text}"
+            return f"Erreur API ({response.status_code}) : {response.text}"
             
     except Exception as e:
-        return f"❌ Erreur de connexion : {str(e)}"
+        return f"Erreur de connexion : {str(e)}"
 
 # --- Interface avec Thème Orange Futurisys ---
 custom_theme = gr.themes.Soft(
@@ -53,17 +56,17 @@ custom_theme = gr.themes.Soft(
     button_primary_background_fill="*primary_500",
 )
 
-with gr.Blocks(title="Futurisys ML Tool") as demo:
+with gr.Blocks(title="Futurisys ML Tool") as gui:
     gr.Markdown(
         """
-        # 🏢 <span style='color: #FF8C00;'>Futurisys</span> : Calculateur Carbone
+        #<span style='color: #FF8C00;'>Futurisys</span> : Calculateur Carbone
         *Interface de démonstration POC - Validation du modèle prédictif.*
         """
     )
     
     with gr.Row():
         with gr.Column():
-            gr.Markdown("### 🛠️ Paramètres du Bâtiment")
+            gr.Markdown("### Paramètres du Bâtiment")
             gfa_input = gr.Number(label="Surface Totale (m²)", value=2500)
             year_input = gr.Slider(label="Année de construction", minimum=1900, maximum=2025, value=1990, step=1)
             type_input = gr.Dropdown(
@@ -71,10 +74,10 @@ with gr.Blocks(title="Futurisys ML Tool") as demo:
                 choices=["NonResidential", "Nonresidential COS", "Multifamily LR (1-4)", "Multifamily MR (5-10)", "Campus"],
                 value="NonResidential"
             )
-            submit_btn = gr.Button("🚀 CALCULER L'EMPREINTE", variant="primary")
+            submit_btn = gr.Button("CALCULER L'EMPREINTE", variant="primary")
         
         with gr.Column():
-            gr.Markdown("### 📊 Résultat de l'Analyse")
+            gr.Markdown("### Résultat de l'Analyse")
             output_text = gr.Textbox(label="Rapport de sortie", interactive=False, lines=10)
 
     submit_btn.click(
@@ -84,4 +87,4 @@ with gr.Blocks(title="Futurisys ML Tool") as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch(theme=custom_theme)
+    gui.launch(theme=custom_theme)

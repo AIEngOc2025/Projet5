@@ -1,3 +1,5 @@
+""" Ce script créé des modèles de données pour les entrées utilisateurs
+et les prédictions"""
 from sqlalchemy import Column, Integer, Float, String, DateTime
 from sqlalchemy.sql import func
 from .database import Base
