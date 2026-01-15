@@ -141,4 +141,4 @@ python -m pytest --cov=app --cov-report=html
 
 Le rapport détaillé sera disponible dans le dossier htmlcov/index.html.
 
-Développé par CM pour Futurisys.
+Développé par CM pour Futurisys
