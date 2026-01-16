@@ -13,21 +13,69 @@ sdk_version: 6.2.0
 Bienvenue dans le dépôt du Proof of Concept (POC) de Futurisys. 
 Ce projet expose un modèle de Machine Learning via une API robuste, permettant de prédire l'empreinte carbone des bâtiments en fonction de leurs caractéristiques.
 
-📐 Architecture du Système
-Le projet repose sur une architecture moderne de type "API-First" garantissant la traçabilité et la performance.
+### Architecture du Système
+-API REST (FastAPI) : Moteur central gérant la validation (Pydantic), l'exécution du modèle et la persistance.
 
--Interface Utilisateur (Gradio) : Saisie intuitive des caractéristiques du bâtiment.
-
--API REST (FastAPI) : Moteur central gérant la validation (Pydantic), l'exécution du modèle et la persistance des données.
-
--Base de Données (PostgreSQL) : enregistrement des entrées utilisateur, archivage systématique de chaque prédiction pour audit et ré-entraînement.
+-Base de Données (PostgreSQL) : Archivage systématique de chaque donnée utilisateur , de la prédiction pour audit et ré-entraînement.
 
 -Pipeline CI/CD (GitHub Actions) : Automatisation des tests unitaires et du déploiement vers Hugging Face Spaces.
 
-### Justifications Techniques
+### Diagramme des classes (structure et données)
 
-🛠️ Justifications Techniques
-FastAPI : Choisi pour sa rapidité d'exécution et sa gestion automatique de la documentation (Swagger). La validation de type via Pydantic assure qu'aucune donnée malformée n'atteint le modèle.
+```mermaid 
+classDiagram
+    class Base {
+        <<SQLAlchemy>>
+    }
+    class UserInputRecord {
+        +int id
+        +float property_gfa_total
+        +int year_built
+        +string building_type
+        +datetime created_at
+    }
+    class PredictionRecord {
+        +int id
+        +float property_gfa_total
+        +float prediction_value
+        +datetime created_at
+    }
+
+    Base <|-- UserInputRecord
+    Base <|-- PredictionRecord
+```
+
+### Diagramme de Séquence (Flux de Prédiction)
+Ce diagramme illustre le parcours d'une donnée, de la saisie utilisateur jusqu'à l'archivage sécurisé en base de données.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Utilisateur (Gradio UI)
+    participant API as FastAPI (Moteur central)
+    participant ML as Pipeline ML (Joblib)
+    participant DB as PostgreSQL (Stockage Audit)
+
+    User->>API: POST /predict (Données immo)
+    
+    Note over API: Validation Pydantic
+    
+    API->>DB: crud.save_user_input()
+    DB-->>API: Confirmation ID (Log d'Audit)
+    
+    Note over API: Inférence (Pipeline 14 features)
+    
+    API->>ML: model.predict(input_df)
+    ML-->>API: Valeur prédite (CO2/Énergie)
+    
+    API->>DB: crud.create_prediction(valeur)
+    DB-->>API: Record enregistré
+    
+    API-->>User: 200 OK (Réponse JSON)
+``` 
+
+### Justifications Techniques
+-FastAPI : Choisi pour sa rapidité d'exécution et sa gestion automatique de la documentation (Swagger). La validation de type via Pydantic assure qu'aucune donnée malformée n'atteint le modèle.
 
 -PostgreSQL & SQLAlchemy : L'utilisation d'un ORM permet une gestion rigoureuse de la base de données, assurant une traçabilité complète (Inputs/Outputs), indispensable pour les futurs audits de conformité carbone.
 
@@ -75,7 +123,12 @@ UI:
 python app/ui.py
 ```
 
-Documentation de l'API
+<<<<<<<<< Temporary merge branch 1
+## Documentation de l'API
+=========
+### Documentation de l'API
+
+>>>>>>>>> Temporary merge branch 2
 Une fois l'API lancée, la documentation interactive est accessible sur :
 
 Swagger UI : <http://127.0.0.1:8000/docs>
@@ -142,3 +195,4 @@ python -m pytest --cov=app --cov-report=html
 Le rapport détaillé sera disponible dans le dossier htmlcov/index.html.
 
 Développé par CM pour Futurisys
+>>>>>>>>> Temporary merge branch 2
