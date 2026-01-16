@@ -123,12 +123,7 @@ UI:
 python app/ui.py
 ```
 
-<<<<<<<<< Temporary merge branch 1
 ## Documentation de l'API
-=========
-### Documentation de l'API
-
->>>>>>>>> Temporary merge branch 2
 Une fois l'API lancée, la documentation interactive est accessible sur :
 
 Swagger UI : <http://127.0.0.1:8000/docs>
@@ -195,4 +190,3 @@ python -m pytest --cov=app --cov-report=html
 Le rapport détaillé sera disponible dans le dossier htmlcov/index.html.
 
 Développé par CM pour Futurisys
->>>>>>>>> Temporary merge branch 2
