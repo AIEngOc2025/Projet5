@@ -20,4 +20,4 @@ class Prediction(Base):
 # Commande pour créer physiquement la table dans PostgreSQL
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
-    print("✅ Base de données et table 'predictions' créées avec succès.")
+    print("Base de données et table 'predictions' créées avec succès.")

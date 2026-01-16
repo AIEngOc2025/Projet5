@@ -41,7 +41,7 @@ def predict_carbon(gfa, year, btype):
             result = response.json()
             pred = result.get("prediction_value", 0)
             record_id = result.get("id", "N/A")
-            return f"PRÉDICTION RÉUSSIE\n\nRésultat : {pred:.2f} tCO2eq\nID Archivage : {record_id}\n\nNote : Calcul basé sur le profil standard Futurisys."
+            return f"PRÉDICTION RÉUSSIE\n\nRésultat : {pred:.2f} tCO2\nID Archivage : {record_id}\n\nNote : Calcul basé sur le profil standard Futurisys."
         else:
             return f"Erreur API ({response.status_code}) : {response.text}"
             

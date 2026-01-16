@@ -15,7 +15,7 @@ def seed_database():
         print(f"Erreur : Le fichier {file_path} est introuvable.")
         return
 
-    print(f"📖 Lecture du fichier {file_path}...")
+    print(f"Lecture du fichier {file_path}...")
     df = pd.read_csv(file_path)
 
     print("Début de l'insertion dans PostgreSQL...")
