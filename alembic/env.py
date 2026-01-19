@@ -5,7 +5,8 @@ from sqlalchemy import create_engine, engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from app.database import Base, SQLALCHEMY_DATABASE_URL
+from app.database import  SQLALCHEMY_DATABASE_URL
+from app.models import Base
 
 # 1. Lie le modèle pour que Alembic détecte les changements
 target_metadata = Base.metadata
