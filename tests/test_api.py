@@ -6,8 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.main import api
-from app.database import Base, get_db
-from app.models import UserInputRecord, PredictionRecord 
+from app.models import UserInputRecord, PredictionRecord ,Base, get_db
 
 # Configuration pour SQLite en mémoire partagée
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"

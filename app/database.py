@@ -3,7 +3,7 @@ pour l'application FastAPI utilisant SQLAlchemy et PostgreSQL."""
 # ==========================================================================================
 #%% configuration de la base de données avec SQLAlchemy
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base # declarative_base a bougé dans .orm dans les versions récentes
+from sqlalchemy.orm import sessionmaker # declarative_base a bougé dans .orm dans les versions récentes
 import os
 
 # Configuration de l'URL
