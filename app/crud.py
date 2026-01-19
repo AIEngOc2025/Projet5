@@ -6,8 +6,6 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 
-from .database import UserInputRecord
-
 from .models import UserInputRecord
 
 def save_user_input(db: Session, data: dict):

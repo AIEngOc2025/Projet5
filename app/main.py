@@ -12,7 +12,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from . import models, schemas, crud
-from .database import engine, get_db
+from . models import get_db
+from . database import engine
 
 #=========================================================================================
 #%% Stockage global du modèle pour éviter de le recharger à chaque requête

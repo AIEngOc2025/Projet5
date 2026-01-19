@@ -1,7 +1,7 @@
 """ce script contient les schémas Pydantic pour la validation des données d'entrée et
 de sortie de l'API."""
 #%% app/schemas.py
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict,Field
 from datetime import datetime
 from typing import Optional
 
@@ -24,8 +24,10 @@ class PredictionBase(BaseModel):
     compliance_status: Optional[str] = "Compliant"
     ghg_emissions_intensity: Optional[float] = 0  
 #%% Schéma utilisé pour la création de données (peut être étendu si besoin)
-class PredictionCreate(PredictionBase):
-    pass
+class PredictionCreate(BaseModel):
+    property_gfa_total: float = Field(..., gt=0) # Doit être > 0
+    year_built: int = Field(..., ge=1800, le=2026) # Année réaliste
+    building_type: str
 
 #%% Schéma de réponse (ce que l'API renvoie, incluant les données générées par la DB)
 class PredictionResponse(PredictionBase):
