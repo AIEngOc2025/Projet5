@@ -6,6 +6,7 @@ Intégration MLflow pour la gestion du cycle de vie et persistance PostgreSQL.
 #%% IMPORTATIONS DES BIBLIOTHEQUES
 import joblib
 import pandas as pd
+import numpy as np 
 import mlflow.sklearn  # Ajout de MLflow
 from pathlib import Path
 from contextlib import asynccontextmanager
