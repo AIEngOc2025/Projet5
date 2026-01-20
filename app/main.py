@@ -33,10 +33,10 @@ async def lifespan(api: FastAPI):
         print(f"Tentative de chargement du modèle depuis MLflow : {model_uri}...")
         ml_models["energy_model"] = mlflow.sklearn.load_model(model_uri)
         ml_models["model_version"] = "MLflow latest"
-        print("✅ Pipeline ML chargé depuis MLflow.")
+        print("Pipeline ML chargé depuis MLflow.")
         
     except Exception as e:
-        print(f"⚠️ Échec MLflow ({e}). Repli sur le fichier local joblib...")
+        print(f"Échec MLflow ({e}). Repli sur le fichier local joblib...")
         # Fallback sur le fichier local si MLflow n'est pas disponible
         model_path = Path(__file__).parent.parent / "models" / "model_energy.joblib"
         if not model_path.exists():
@@ -44,7 +44,7 @@ async def lifespan(api: FastAPI):
         
         ml_models["energy_model"] = joblib.load(model_path)
         ml_models["model_version"] = "Local Joblib File"
-        print("✅ Pipeline ML chargé depuis le fichier local.")
+        print("Pipeline ML chargé depuis le fichier local.")
 
     yield
     ml_models.clear()
