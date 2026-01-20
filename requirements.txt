@@ -11,3 +11,4 @@ pydantic-settings
 gradio
 python-multipart
 alembic>=1.11.1
+mlflow>=3.1
