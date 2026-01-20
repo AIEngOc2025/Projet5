@@ -15,7 +15,7 @@ import joblib
 #%% --- 1. CHARGEMENT ET ENTRAÎNEMENT RAPIDE on utilsera joblib pour sauvegarder le modèle après entrainement ---    
 def train_model():
     """Entraine le modèle"""
-    df_sample = pd.read_csv('/Users/mpaga/Desktop/OC/Projets/Projet3/data/2016_Building_Energy_Benchmarking.csv')
+    df_sample = pd.read_csv('/Users/mpaga/Desktop/OC/Projet3/data/2016_Building_Energy_Benchmarking.csv')
     # Création de la cible et Nettoyage des données  
     df_sample = df_sample.fillna({'TotalGHGEmissions':df_sample['TotalGHGEmissions'].median()})
     df_sample['Log_TotalGHGEmissions'] = np.log1p(df_sample['TotalGHGEmissions'] + 1)
@@ -49,5 +49,6 @@ import joblib
 best_model = model
 
 # Sauvegarde du pipeline complet (inclut le préprocesseur + le modèle)
-joblib.dump(best_model, 'models/model_energy.joblib', compress=3)
+joblib.dump(best_model, 'model_energy.joblib', compress=3)
 print("Modèle compressé et sauvegardé sous 'model_energy.joblib'")
+# %%
